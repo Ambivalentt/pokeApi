@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/style.css">
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+</head>
+
+<body>
+    <header class="w-full shadow-2xl bg-teal-500 fixed z-50">
+        <nav class="h-14 flex justify-between mx-7 items-center">
+            <h1 class="custom-font text-2xl text-white font-semibold">PokeApi</h1>
+            <ul class="flex gap-x-8 justify-end custom-font text-white relative">
+                <div class="flex bg-white rounded-lg">
+                    <input type="search" class="text-black rounded-lg ps-1.5 md:w-32" placeholder="Search">
+                    <box-icon name='search-alt-2'></box-icon>
+                </div>
+                <li class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Buscar</li>
+                <!--filter toggle-->
+                <section class="absolute -bottom-6 hidden">
+                    <input type="text">
+                </section>
+                <!---->
+                <li class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Filtrar</li>
+            </ul>
+        </nav>
+    </header>
+    <main class="w-full bg-gray-200 pt-28">
+        <div id="loadingOverlay" class="loading-overlay">
+            <img src="../img/Pulse-1s-200px.svg" class="loader" alt="Loading...">
+        </div>
+        <div class="flex justify-center pb-5">
+            <button onclick="prevPage()" id="prevBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Atras</button>
+            <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>
+            <button onclick="nextPage()" id="nextBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Siguiente</button>
+        </div>
+        <section id="pokeContainer" class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 max-w-7xl mx-auto gap-5">
+        </section>
+        <div class="flex justify-center py-5">
+            <button onclick="prevPage()" id="prevBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Atras</button>
+            <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>
+            <button onclick="nextPage()" id="nextBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Siguiente</button>
+        </div>
+    </main>
+
+
+
+    <script src="/dist/index.js"></script>
+</body>
+
+</html>

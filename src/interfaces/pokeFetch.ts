@@ -1,3 +1,5 @@
+import { getCardStyle } from './switchColor.js'
+
 interface PokeApiResponse {
     results: Pokemon[];
     count: number;
@@ -5,13 +7,19 @@ interface PokeApiResponse {
 
 export interface Pokemon {
     url: string;
-    name: string
+    name: string;
 }
 
 interface PokemonData {
     name: string;
     sprites: {
         front_default: string;
+    };
+}
+
+interface PokemonSpecies {
+    color: {
+        name: string;
     };
 }
 
@@ -27,20 +35,104 @@ export const pokeApi = async (): Promise<PokeApiResponse> => {
     }
 };
 
-export const fetchPokemonData = async (url: string): Promise<PokemonData> => {
+export const fetchPokemonData = async (url: string): Promise<PokemonData & PokemonSpecies> => {
     try {
         const request = await fetch(url);
-        const response: PokemonData = await request.json();
-        return response;
+        const response: PokemonData & { species: { name: string; url: string } } = await request.json();
+        const speciesRequest = await fetch(response.species.url);
+        const speciesResponse: PokemonSpecies = await speciesRequest.json();
+        return {
+            ...response,
+            color: speciesResponse.color,
+        }
     } catch (err) {
         console.log('Error fetching Pokemon data:', err);
         throw err;
     }
 };
 
-export let currentPage = 0
-export const itemsPerPage = 5
-export const totalPokemons = 300
+export const totalPokemons = 900;
+
+let currentPage = 0;
+const itemsPerPage = 20;
+let filteredPokemonData: Pokemon[] = [];
+
+export async function renderPokemonPage() {
+    try {
+        let response: PokeApiResponse;
+        if (filteredPokemonData.length === 0) {
+            response = await pokeApi();
+        } else {
+            response = {
+                results: filteredPokemonData,
+                count: filteredPokemonData.length,
+            };
+        }
+
+        const totalPokemons = response.count;
+
+        const pokeContainer = document.getElementById('pokeContainer') as HTMLElement;
+
+        const prevBtns = document.querySelectorAll('#prevBtn') as NodeListOf<HTMLButtonElement>;
+        const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTMLButtonElement>;
+
+        prevBtns.forEach((prevBtn) => {
+            prevBtn.disabled = currentPage === 0;
+            prevBtn.addEventListener('click', prevPage);
+        });
+
+        nextBtns.forEach((nextBtn) => {
+            nextBtn.disabled = currentPage >= Math.ceil(totalPokemons / itemsPerPage) - 1;
+            nextBtn.addEventListener('click', nextPage);
+        });
+
+        pokeContainer.innerHTML = ''; // Clear the container before rendering new Pokemon
+
+        const startIdx = currentPage * itemsPerPage;
+        const endIdx = startIdx + itemsPerPage;
+
+        const pokemonsToRender = response.results.slice(startIdx, endIdx);
+
+        const pokemonData = await Promise.all(
+            pokemonsToRender.map((pokemon) => fetchPokemonData(pokemon.url)) // Ensure the 'url' is used correctly
+        );
+
+        const pokeArticles = pokemonData
+            .map((pokeInfo) => {
+                const cardStyleClass = getCardStyle(pokeInfo.color.name);
+                return `
+            <article class="bg-white shadow-2xl rounded-md cursor-pointer hover:scale-105 transition-transform">
+                <header class="flex justify-center flex-col">
+                    <div class="flex justify-center">
+                        <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
+                    </div>
+                    <div class="flex justify-center bg-bot-card rounded-b-md ${cardStyleClass}">
+                        <p class="py-2 text-white custom-font">${pokeInfo.name}</p>
+                    </div>
+                </header>
+            </article>
+          `;
+            })
+            .join('');
+
+        pokeContainer.innerHTML = pokeArticles;
+
+        const currentPageSpan = document.querySelectorAll('#currentPage');
+        if (currentPageSpan) {
+            currentPageSpan.forEach((pages) => {
+                pages.textContent = (currentPage + 1).toString();
+            });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+export async function filterAndRenderPokemons(filteredPokemons: Pokemon[], totalPokemons: number) {
+    filteredPokemonData = filteredPokemons;
+    currentPage = 0;
+    renderPokemonPage();
+}
+
 
 const loadingOverlay = document.getElementById('loadingOverlay') as HTMLDivElement;
 export function showLoadingOverlay() {
@@ -51,151 +143,39 @@ export function hideLoadingOverlay() {
     loadingOverlay.style.display = 'none';
 }
 
-
-const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTMLButtonElement>;
-nextBtns.forEach((nextBtn) => {
-    nextBtn.addEventListener('click', nextPage);
-});
-
-const prevBtns = document.querySelectorAll('#prevBtn') as NodeListOf<HTMLButtonElement>;
-prevBtns.forEach((prevBtn) => {
-    prevBtn.addEventListener('click', prevPage);
-});
-
 export function prevPage() {
     if (currentPage > 0) {
         currentPage--;
-        showLoadingOverlay(); // Mostrar el overlay de carga
+        showLoadingOverlay()
         renderPokemonPage().then(() => {
             setTimeout(() => {
                 hideLoadingOverlay()
-            }, 250);; // Ocultar el overlay de carga una vez completada la carga y renderizado
-        });
+            }, 250)
+        })
     }
-
 }
 
 export function nextPage() {
     const totalPages = Math.ceil(totalPokemons / itemsPerPage);
-    
     if (currentPage + 1 < totalPages) {
-        currentPage++
-        showLoadingOverlay(); // Mostrar el overlay de carga
+        currentPage++;
+        showLoadingOverlay();
         renderPokemonPage().then(() => {
             setTimeout(() => {
                 hideLoadingOverlay()
-            }, 250);; // Ocultar el overlay de carga una vez completada la carga y renderizado
-        });
-
-    }
-}
-
-export async function renderPokemonPage() {
-    const pokeContainer = document.getElementById('pokeContainer') as HTMLElement
-
-    prevBtns.forEach((prevBtn) => {
-        prevBtn.disabled = currentPage === 0;
-    });
-
-    nextBtns.forEach(nextBtn => {
-        nextBtn.disabled = currentPage >= Math.ceil(totalPokemons / itemsPerPage) - 1;
-    })
-
-    pokeContainer.innerHTML = ''; // Clear the container before rendering new Pokemon
-
-    const startIdx = currentPage * itemsPerPage;
-    const endIdx = startIdx + itemsPerPage;
-
-    try {
-        const response = await pokeApi(); // Fetch the Pokémon data and the total count
-        const totalPokemons = response.count;
-
-        // Calculate the total number of pages
-        const totalPages = Math.ceil(totalPokemons / itemsPerPage);
-
-        // Ensure the currentPage is within the valid range
-        currentPage = Math.max(0, Math.min(totalPages - 1, currentPage));
-
-        // Fetch the Pokémon data for the current page
-        const pokemonData = await Promise.all(
-            response.results.slice(startIdx, endIdx).map((pokemon) => fetchPokemonData(pokemon.url))
-        );
-
-        const pokeArticles = pokemonData
-            .map((pokeInfo) => {
-                return `
-                    <article class="bg-white shadow-2xl rounded-md cursor-pointer hover:scale-105 transition-transform">
-                        <header class="flex justify-center flex-col">
-                            <div class="flex justify-center">
-                                <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
-                            </div>
-                            <div class="flex justify-center bg-bot-card rounded-b-md">
-                                <p class="py-2 text-white custom-font">${pokeInfo.name}</p>
-                            </div>
-                        </header>
-                    </article>
-                `;
-            })
-            .join('');
-
-        pokeContainer.innerHTML = pokeArticles;
-
-        const currentPageSpan = document.querySelectorAll('#currentPage')
-        if (currentPageSpan) {
-            currentPageSpan.forEach(pages => {
-                pages.textContent = (currentPage + 1).toString();
-            });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-//filtrar
-export async function filterAndRenderPokemons(filteredPokemons: PokemonData[], currentPage:number, itemsPerPage:number, totalPokemons:number) {
-    const pokeContainer = document.getElementById('pokeContainer') as HTMLElement
-
-    prevBtns.forEach((prevBtn) => {
-        prevBtn.disabled = currentPage === 0;
-    });
-
-    nextBtns.forEach(nextBtn => {
-        nextBtn.disabled = currentPage >= Math.ceil(totalPokemons / itemsPerPage) - 1;
-    })
-
-    pokeContainer.innerHTML = ''; // Clear the container before rendering new Pokemon
-
-    const startIdx = currentPage * itemsPerPage;
-    const endIdx = startIdx + itemsPerPage;
-
-    const totalPages = Math.ceil(totalPokemons / itemsPerPage);
-
-    
-    currentPage = Math.max(0, Math.min(totalPages - 1, currentPage));
-    const pokemonsFilters = filteredPokemons.slice(startIdx, endIdx)
-
-    const pokeArticles = pokemonsFilters
-        .map((pokeInfo) => {
-            return `
-          <article class="bg-white shadow-2xl rounded-md cursor-pointer hover:scale-105 transition-transform">
-              <header class="flex justify-center flex-col">
-                  <div class="flex justify-center">
-                      <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
-                  </div>
-                  <div class="flex justify-center bg-bot-card rounded-b-md">
-                      <p class="py-2 text-white custom-font">${pokeInfo.name}</p>
-                  </div>
-              </header>
-          </article>
-        `;
+            }, 250)
         })
-        .join('');
-       
-    pokeContainer.innerHTML = pokeArticles;
-    const currentPageSpan = document.querySelectorAll('#currentPage')
-        if (currentPageSpan) {
-            currentPageSpan.forEach(pages => {
-                pages.textContent = (currentPage + 1).toString();
-            });
-        }
+    }
 }
+
+const inicioBtn = document.getElementById('indexBtn') as HTMLButtonElement
+
+inicioBtn.addEventListener('click', () => {
+    currentPage = 0
+    showLoadingOverlay();
+    renderPokemonPage().then(() => {
+        setTimeout(() => {
+            hideLoadingOverlay()
+        }, 250)
+    })
+})

@@ -10,22 +10,20 @@
 
 body {
   overflow-y: scroll;
+  background: radial-gradient(circle, #d4d2d1, rgb(255, 255, 255) 0%, rgb(239, 245, 242) 100%);
 }
 
 .header-color {
-  background-color: #00A055;
+  background-color: rgb(54, 92, 54);
 }
 
-.main-bg {
-  background-color: #D4FADD;
-}
 
 .custom-font {
   font-family: var(--custom-Font);
 }
 
 .bg-bot-card {
-  background-color: #00A055;
+  background-color: white;
 }
 
 .prevNextBtn {

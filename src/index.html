@@ -14,15 +14,15 @@
 <body>
     <header class="w-full shadow-2xl header-color fixed z-50">
         <nav class="h-14 flex mx-2 xl:mx-20 items-center justify-between ">
-            <h1 class="custom-font text-2xl text-white font-semibold">PokeApi</h1>
+            <h1 class="custom-font text-2xl text-white font-semibold cursor-pointer" type="button" id="indexBtn">PokeApi</h1>
             <ul class="gap-x-8 custom-font text-white relative hidden md:flex md:justify-between container items-center px-10">
                 <li>
                     <div class="flex bg-white rounded-lg">
                         <input id="inputSearch" type="search" autocomplete="off" class="text-black rounded-lg ps-1.5 md:w-45" placeholder="Search">
                         <box-icon name='search-alt-2'></box-icon>
-                    </div>
-                </li>
-                <li class="flex gap-x-5">
+                    </div> 
+                </li>  
+                <li class="flex gap-x-5"> 
                     <p id="btnSearch" type="button" class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Buscar</p>
                     <p class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Filtrar</p>
                 </li>
@@ -54,7 +54,7 @@
             </section>
         </nav>
     </header>
-    <main class="w-full main-bg pt-28 px-3 h-screen">
+    <main class="w-full main-bg pt-28 px-3">
         <div id="loadingOverlay" class="loading-overlay">
             <img src="../img/Pulse-1s-200px.svg" class="loader" alt="Loading...">
         </div>

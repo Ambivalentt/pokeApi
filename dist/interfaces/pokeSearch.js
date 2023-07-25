@@ -1,4 +1,4 @@
-import { pokeApi, fetchPokemonData, filterAndRenderPokemons, currentPage, itemsPerPage } from "./pokeFetch.js";
+import { pokeApi, fetchPokemonData, filterAndRenderPokemons, hideLoadingOverlay, showLoadingOverlay } from "./pokeFetch.js";
 export async function getAllPokemons() {
     try {
         const response = await pokeApi();
@@ -12,12 +12,17 @@ export async function getAllPokemons() {
 getAllPokemons().then((AllPokemons) => {
     if (AllPokemons) {
         const pokeSearchBtn = document.querySelectorAll('#btnSearch');
-        const inputSearchs = document.querySelectorAll('#inputSearch');
+        let inputSearchs = document.querySelectorAll('#inputSearch');
         pokeSearchBtn.forEach((searchBtn, index) => {
             searchBtn.addEventListener('click', () => {
                 const foundPokemon = AllPokemons.filter(pokemon => pokemon.name.startsWith(inputSearchs[index].value.toLowerCase()));
                 const totalPokemons = foundPokemon.length;
-                fetchFilteredPokemonData(foundPokemon, totalPokemons);
+                showLoadingOverlay();
+                fetchFilteredPokemonData(foundPokemon, totalPokemons).then(() => {
+                    setTimeout(() => {
+                        hideLoadingOverlay();
+                    }, 400);
+                });
             });
         });
     }
@@ -27,8 +32,11 @@ getAllPokemons().then((AllPokemons) => {
 });
 async function fetchFilteredPokemonData(filteredPokemons, totalPokemons) {
     try {
-        const pokemonData = await Promise.all(filteredPokemons.map((pokemon) => fetchPokemonData(pokemon.url)));
-        filterAndRenderPokemons(pokemonData, currentPage, itemsPerPage, totalPokemons);
+        const pokemonData = await Promise.all(filteredPokemons.map(async (pokemon) => {
+            const data = await fetchPokemonData(pokemon.url);
+            return { url: pokemon.url, name: data.name };
+        }));
+        filterAndRenderPokemons(pokemonData, totalPokemons);
     }
     catch (error) {
         console.error('Error fetching Pokemon data:', error);

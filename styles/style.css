@@ -12,8 +12,49 @@ body {
   overflow-y: scroll;
 }
 
+.header-color {
+  background-color: #00A055;
+}
+
+.main-bg {
+  background-color: #D4FADD;
+}
+
 .custom-font {
   font-family: var(--custom-Font);
+}
+
+.bg-bot-card {
+  background-color: #00A055;
+}
+
+.prevNextBtn {
+  background-color: #00A055;
+  color: white;
+  transition: outline 0.2s ease-in-out;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-tap-highlight-color: transparent; /* Safari e iOS */
+  -moz-tap-highlight-color: transparent; /* Firefox */
+  -ms-tap-highlight-color: transparent; /* Internet Explorer */
+}
+
+.prevNextBtn:active{
+  filter: brightness(1.3);
+  transition: filter 0s;
+  scale: 1.1
+}
+.prevNextBtn:is(:hover, :focus) {
+  outline: solid;
+  outline-color: #00A055;
+  outline-offset: 1px;
+}
+
+.prevNextBtn:disabled {
+  filter: none;
+  outline: none;
 }
 
 .loading-overlay {
@@ -27,12 +68,16 @@ body {
   align-items: center;
   background-color: white;
   z-index: 20;
-  
- /* pointer-events: none;  Permitir clics en elementos detrás del overlay */
+
+  /* pointer-events: none;  Permitir clics en elementos detrás del overlay */
 }
 
 /* Estilos para el loader */
 .loader {
   width: 50px;
   height: 50px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }

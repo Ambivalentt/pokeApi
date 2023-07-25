@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Permissions-Policy" content="interest-cohort=()"/>
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../styles/style.css">
@@ -12,45 +12,77 @@
 </head>
 
 <body>
-    <header class="w-full shadow-2xl bg-teal-500 fixed z-50">
-        <nav class="h-14 flex justify-between mx-7 items-center">
+    <header class="w-full shadow-2xl header-color fixed z-50">
+        <nav class="h-14 flex mx-2 xl:mx-20 items-center justify-between ">
             <h1 class="custom-font text-2xl text-white font-semibold">PokeApi</h1>
-            <ul class="flex gap-x-8 justify-end custom-font text-white relative">
-                <div class="flex bg-white rounded-lg">
-                    <input type="search" class="text-black rounded-lg ps-1.5 md:w-32" placeholder="Search">
-                    <box-icon name='search-alt-2'></box-icon>
-                </div>
-                <li class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Buscar</li>
-                <!--filter toggle-->
-                <section class="absolute -bottom-6 hidden">
-                    <input type="text">
-                </section>
-                <!---->
-                <li class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Filtrar</li>
+            <ul class="gap-x-8 custom-font text-white relative hidden md:flex md:justify-between container items-center px-10">
+                <li>
+                    <div class="flex bg-white rounded-lg">
+                        <input id="inputSearch" type="search" autocomplete="off" class="text-black rounded-lg ps-1.5 md:w-45" placeholder="Search">
+                        <box-icon name='search-alt-2'></box-icon>
+                    </div>
+                </li>
+                <li class="flex gap-x-5">
+                    <p id="btnSearch" type="button" class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Buscar</p>
+                    <p class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Filtrar</p>
+                </li>
+
             </ul>
+            <!--mobile menu-->
+            <section class="md:hidden relative">
+                <svg id="menuIcon" class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" height="1.4em" fill="white"
+                    viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path
+                        d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
+                </svg>
+                <nav id="menuMobilContent" class="absolute right-0 top-5 bg-green-700 p-2 rounded-xl transition-all invisible h-0 overflow-hidden opacity-30 ">
+                    <ul class="flex flex-col gap-y-2 items-end">
+                        <li>
+                            <div class="flex rounded-lg bg-white">
+                                <input id="inputSearch" type="search" class="text-black rounded-lg ps-1.5 w-32" placeholder="Buscar">
+                                <box-icon name='search-alt-2'></box-icon> 
+                            </div>
+                        </li>
+                        <li id="btnSearch" type="button" class="text-white custom-font flex">
+                            Buscar
+                        </li>
+                        <li id="filter" class="text-white custom-font">
+                            Filtrar
+                        </li>
+                    </ul>
+                </nav>
+            </section>
         </nav>
     </header>
-    <main class="w-full bg-gray-200 pt-28">
+    <main class="w-full main-bg pt-28 px-3 h-screen">
         <div id="loadingOverlay" class="loading-overlay">
             <img src="../img/Pulse-1s-200px.svg" class="loader" alt="Loading...">
         </div>
+
+        <!--Buttons TOP-->
         <div class="flex justify-center pb-5">
-            <button onclick="prevPage()" id="prevBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Atras</button>
+            <button  id="prevBtn"
+                class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Menos</button>
             <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>
-            <button onclick="nextPage()" id="nextBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Siguiente</button>
+            <button  id="nextBtn"
+                class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Más</button>
         </div>
-        <section id="pokeContainer" class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 max-w-7xl mx-auto gap-5">
+
+        <!--Container pokemons-->
+        <section id="pokeContainer" class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 max-w-7xl mx-auto gap-5 h-max">
         </section>
-        <div class="flex justify-center py-5">
-            <button onclick="prevPage()" id="prevBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Atras</button>
+
+        <!--Buttons BOTTOM-->
+        <div class="flex justify-center py-7">
+            <button  id="prevBtn"
+                class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Menos</button>
             <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>
-            <button onclick="nextPage()" id="nextBtn" class="w-20 bg-white rounded-xl font-semibold text-green-800 custom-font disabled:bg-gray-300">Siguiente</button>
+            <button  id="nextBtn"
+                class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Más</button>
         </div>
     </main>
 
-
-
-    <script src="/dist/index.js"></script>
+    <script src="/dist/index.js" type="module"></script>
 </body>
 
 </html>

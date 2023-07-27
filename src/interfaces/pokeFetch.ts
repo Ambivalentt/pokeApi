@@ -15,9 +15,13 @@ interface PokemonData {
     sprites: {
         front_default: string;
     };
+    species: {
+        name: string;
+        url: string;
+    };
 }
 
-interface PokemonSpecies {
+interface PokemonSpeciesColor {
     color: {
         name: string;
     };
@@ -35,33 +39,37 @@ export const pokeApi = async (): Promise<PokeApiResponse> => {
     }
 };
 
-export const fetchPokemonData = async (url: string): Promise<PokemonData & PokemonSpecies> => {
+export const fetchPokemonData = async (url: string): Promise<PokemonData & PokemonSpeciesColor> => {
     try {
         const request = await fetch(url);
-        const response: PokemonData & { species: { name: string; url: string } } = await request.json();
+        const response: PokemonData = await request.json();
+
         const speciesRequest = await fetch(response.species.url);
-        const speciesResponse: PokemonSpecies = await speciesRequest.json();
-        return {
-            ...response,
-            color: speciesResponse.color,
-        }
+        const speciesResponse: PokemonSpeciesColor = await speciesRequest.json();
+
+        return { ...response, ...speciesResponse };
     } catch (err) {
         console.log('Error fetching Pokemon data:', err);
         throw err;
     }
 };
-
+const ContainerButtons = document.querySelectorAll('#containerButtons') as NodeListOf<HTMLButtonElement>
+export const prevBtns = document.querySelectorAll('#prevBtn') as NodeListOf<HTMLButtonElement>;
+export const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTMLButtonElement>;
+export const not_found_404 = document.getElementById('notFound') as HTMLDivElement
+const pokeContainer = document.getElementById('pokeContainer') as HTMLElement;
 export const totalPokemons = 900;
 
 let currentPage = 0;
 const itemsPerPage = 20;
-let filteredPokemonData: Pokemon[] = [];
+export let filteredPokemonData: Pokemon[] = [];
 
 export async function renderPokemonPage() {
     try {
         let response: PokeApiResponse;
+
         if (filteredPokemonData.length === 0) {
-            response = await pokeApi();
+            response = await pokeApi()
         } else {
             response = {
                 results: filteredPokemonData,
@@ -69,12 +77,10 @@ export async function renderPokemonPage() {
             };
         }
 
+
         const totalPokemons = response.count;
 
-        const pokeContainer = document.getElementById('pokeContainer') as HTMLElement;
 
-        const prevBtns = document.querySelectorAll('#prevBtn') as NodeListOf<HTMLButtonElement>;
-        const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTMLButtonElement>;
 
         prevBtns.forEach((prevBtn) => {
             prevBtn.disabled = currentPage === 0;
@@ -114,8 +120,9 @@ export async function renderPokemonPage() {
           `;
             })
             .join('');
-
         pokeContainer.innerHTML = pokeArticles;
+
+
 
         const currentPageSpan = document.querySelectorAll('#currentPage');
         if (currentPageSpan) {
@@ -168,12 +175,18 @@ export function nextPage() {
     }
 }
 
-const inicioBtn = document.getElementById('indexBtn') as HTMLButtonElement
+export const inicioBtn = document.getElementById('indexBtn') as HTMLButtonElement
 
 inicioBtn.addEventListener('click', () => {
     currentPage = 0
+    filteredPokemonData = []
     showLoadingOverlay();
     renderPokemonPage().then(() => {
+        pokeContainer.classList.replace('hidden','grid');
+        not_found_404.classList.replace('flex','hidden')
+        ContainerButtons.forEach(containerBtn => {
+            containerBtn.classList.replace('hidden','flex')
+          })
         setTimeout(() => {
             hideLoadingOverlay()
         }, 250)

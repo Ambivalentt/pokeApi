@@ -17,20 +17,22 @@ export const fetchPokemonData = async (url) => {
         const response = await request.json();
         const speciesRequest = await fetch(response.species.url);
         const speciesResponse = await speciesRequest.json();
-        return {
-            ...response,
-            color: speciesResponse.color,
-        };
+        return { ...response, ...speciesResponse };
     }
     catch (err) {
         console.log('Error fetching Pokemon data:', err);
         throw err;
     }
 };
+const ContainerButtons = document.querySelectorAll('#containerButtons');
+export const prevBtns = document.querySelectorAll('#prevBtn');
+export const nextBtns = document.querySelectorAll('#nextBtn');
+export const not_found_404 = document.getElementById('notFound');
+const pokeContainer = document.getElementById('pokeContainer');
 export const totalPokemons = 900;
 let currentPage = 0;
 const itemsPerPage = 20;
-let filteredPokemonData = [];
+export let filteredPokemonData = [];
 export async function renderPokemonPage() {
     try {
         let response;
@@ -44,9 +46,6 @@ export async function renderPokemonPage() {
             };
         }
         const totalPokemons = response.count;
-        const pokeContainer = document.getElementById('pokeContainer');
-        const prevBtns = document.querySelectorAll('#prevBtn');
-        const nextBtns = document.querySelectorAll('#nextBtn');
         prevBtns.forEach((prevBtn) => {
             prevBtn.disabled = currentPage === 0;
             prevBtn.addEventListener('click', prevPage);
@@ -124,11 +123,17 @@ export function nextPage() {
         });
     }
 }
-const inicioBtn = document.getElementById('indexBtn');
+export const inicioBtn = document.getElementById('indexBtn');
 inicioBtn.addEventListener('click', () => {
     currentPage = 0;
+    filteredPokemonData = [];
     showLoadingOverlay();
     renderPokemonPage().then(() => {
+        pokeContainer.classList.replace('hidden', 'grid');
+        not_found_404.classList.replace('flex', 'hidden');
+        ContainerButtons.forEach(containerBtn => {
+            containerBtn.classList.replace('hidden', 'flex');
+        });
         setTimeout(() => {
             hideLoadingOverlay();
         }, 250);

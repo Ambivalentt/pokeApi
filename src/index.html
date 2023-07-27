@@ -35,8 +35,8 @@
                     <path
                         d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
                 </svg>
-                <nav id="menuMobilContent" class="absolute right-0 top-5 bg-green-700 p-2 rounded-xl transition-all invisible h-0 overflow-hidden opacity-30 ">
-                    <ul class="flex flex-col gap-y-2 items-end">
+                <nav id="menuMobilContent" class="absolute right-0 top-5 bg-green-950 p-2 rounded-xl transition-all invisible h-0 overflow-hidden opacity-30 ">
+                    <ul class="flex flex-col gap-y-2 items-end"
                         <li>
                             <div class="flex rounded-lg bg-white">
                                 <input id="inputSearch" type="search" class="text-black rounded-lg ps-1.5 w-32" placeholder="Buscar">
@@ -60,20 +60,27 @@
         </div>
 
         <!--Buttons TOP-->
-        <div class="flex justify-center pb-5">
+        <div id="containerButtons" class="flex justify-center pb-5">
             <button  id="prevBtn"
                 class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Menos</button>
             <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>
             <button  id="nextBtn"
                 class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Más</button>
-        </div>
+        </div>  
 
         <!--Container pokemons-->
         <section id="pokeContainer" class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 max-w-7xl mx-auto gap-5 h-max">
         </section>
+        <!--Not found Container-->
+        <section id="notFound" class="hidden justify-center items-center flex-col">
+            <p class="text-center text-4xl font-semibold custom-font">Pokemon not found</p>
+            <figure>
+                <img src="../img/XDD-removebg-preview.webp" alt="">
+            </figure>
+        </section>
 
         <!--Buttons BOTTOM-->
-        <div class="flex justify-center py-7">
+        <div id="containerButtons" class="flex justify-center py-7">
             <button  id="prevBtn"
                 class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Menos</button>
             <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>

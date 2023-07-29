@@ -14,17 +14,42 @@
 <body>
     <header class="w-full shadow-2xl header-color fixed z-50">
         <nav class="h-14 flex mx-2 xl:mx-20 items-center justify-between ">
-            <h1 class="custom-font text-2xl text-white font-semibold cursor-pointer" type="button" id="indexBtn">PokeApi</h1>
-            <ul class="gap-x-8 custom-font text-white relative hidden md:flex md:justify-between container items-center px-10">
+            <h1 class="custom-font text-2xl text-white font-semibold cursor-pointer" type="button" id="indexBtn">PokeApi
+            </h1>
+            <ul
+                class="gap-x-8 custom-font text-white relative hidden md:flex md:justify-between container items-center px-10">
                 <li>
-                    <div class="flex bg-white rounded-lg">
-                        <input id="inputSearch" type="search" autocomplete="off" class="text-black rounded-lg ps-1.5 md:w-45" placeholder="Search">
+                    <div class="flex bg-white rounded-lg items-center">
+                        <input id="inputSearch" type="search" autocomplete="off"
+                            class="text-black rounded-lg py-1 ps-1.5 md:w-45 outline-none" placeholder="Search">
                         <box-icon name='search-alt-2'></box-icon>
-                    </div> 
-                </li>  
-                <li class="flex gap-x-5"> 
-                    <p id="btnSearch" type="button" class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Buscar</p>
-                    <p class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500">Filtrar</p>
+                    </div>
+                </li>
+                <li class="flex gap-x-5 relative before_container">
+                    <p id="btnSearch" type="button"
+                        class="hover:-translate-y-0.5 transition-transform cursor-pointer duration-500  transition_before">
+                        Buscar</p>
+                    <select id="poke_filter"
+                        class="cursor-pointer text-white w-28 outline-none header-color focus:bg-white focus:text-black">
+                        <option disabled selected>Filtrar</option>
+                        <option>Agua</option>
+                        <option>Fuego</option>
+                        <option>Tierra</option>
+                        <option>Hielo</option>
+                        <option>Hierva</option>
+                        <option>Electrico</option>
+                        <option>Fantasma</option>
+                        <option>Oscuro</option>
+                        <option>Dragon</option>
+                        <option>Acero</option>
+                        <option>Psiquico</option>
+                        <option>Roca</option>
+                        <option>Luchador</option>
+                        <option>Hada</option>
+                        <option>Veneno</option>
+                        <option>Volador</option>
+                        <option>Normal</option>
+                    </select>
                 </li>
 
             </ul>
@@ -35,41 +60,65 @@
                     <path
                         d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
                 </svg>
-                <nav id="menuMobilContent" class="absolute right-0 top-5 bg-green-950 p-2 rounded-xl transition-all invisible h-0 overflow-hidden opacity-30 ">
-                    <ul class="flex flex-col gap-y-2 items-end"
+                <nav id="menuMobilContent"
+                    class="absolute right-0 top-5 bg-green-800 p-2 rounded-xl transition-all invisible h-0 overflow-hidden opacity-30 ">
+                    <ul class="flex flex-col gap-y-2 items-end">
                         <li>
-                            <div class="flex rounded-lg bg-white">
-                                <input id="inputSearch" type="search" class="text-black rounded-lg ps-1.5 w-32" placeholder="Buscar">
-                                <box-icon name='search-alt-2'></box-icon> 
+                            <div class="flex rounded-lg bg-white items-center">
+                                <input id="inputSearch" type="search"
+                                    class="text-black rounded-lg ps-1.5 w-40 outline-none py-1" placeholder="Buscar"
+                                    autocomplete="off">
+                                <box-icon name='search-alt-2'></box-icon>
                             </div>
                         </li>
                         <li id="btnSearch" type="button" class="text-white custom-font flex">
                             Buscar
                         </li>
                         <li id="filter" class="text-white custom-font">
-                            Filtrar
+                            <select id="poke_filter"
+                                class="cursor-pointer text-white w-28 py-1 px-1 rounded-sm  outline-none header-color focus:bg-white focus:text-black">
+                                <option disabled selected>Filtrar</option>
+                                <option>Agua</option>
+                                <option>Fuego</option>
+                                <option>Tierra</option>
+                                <option>Hielo</option>
+                                <option>Hierva</option>
+                                <option>Electrico</option>
+                                <option>Fantasma</option>
+                                <option>Oscuro</option>
+                                <option>Dragon</option>
+                                <option>Acero</option>
+                                <option>Psiquico</option>
+                                <option>Roca</option>
+                                <option>Luchador</option>
+                                <option>Hada</option>
+                                <option>Veneno</option>
+                                <option>Volador</option>
+                                <option>Normal</option>
+                            </select>
                         </li>
                     </ul>
                 </nav>
             </section>
         </nav>
     </header>
-    <main class="w-full main-bg pt-28 px-3">
+    <main class="w-full main-bg pt-28 px-3 h-max">
         <div id="loadingOverlay" class="loading-overlay">
-            <img src="../img/Pulse-1s-200px.svg" class="loader" alt="Loading...">
+            <img src="../img/Pokémon-Logo-PNG.webp" class="loader w-40" alt="Loading...">
         </div>
 
         <!--Buttons TOP-->
         <div id="containerButtons" class="flex justify-center pb-5">
-            <button  id="prevBtn"
+            <button id="prevBtn"
                 class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Menos</button>
             <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>
-            <button  id="nextBtn"
+            <button id="nextBtn"
                 class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Más</button>
-        </div>  
+        </div>
 
         <!--Container pokemons-->
-        <section id="pokeContainer" class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 max-w-7xl mx-auto gap-5 h-max">
+        <section id="pokeContainer"
+            class="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 max-w-7xl mx-auto gap-5 h-max">
         </section>
         <!--Not found Container-->
         <section id="notFound" class="hidden justify-center items-center flex-col">
@@ -81,10 +130,10 @@
 
         <!--Buttons BOTTOM-->
         <div id="containerButtons" class="flex justify-center py-7">
-            <button  id="prevBtn"
+            <button id="prevBtn"
                 class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Menos</button>
             <span id="currentPage" class="w-10 text-center custom-font font-semibold text-green-800"></span>
-            <button  id="nextBtn"
+            <button id="nextBtn"
                 class="w-20  rounded-xl custom-font disabled:bg-gray-200 shadow-2xl prevNextBtn">Más</button>
         </div>
     </main>

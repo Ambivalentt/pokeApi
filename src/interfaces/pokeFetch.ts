@@ -1,5 +1,7 @@
 import { getCardStyle } from './switchColor.js'
 
+
+
 interface PokeApiResponse {
     results: Pokemon[];
     count: number;
@@ -10,7 +12,7 @@ export interface Pokemon {
     name: string;
 }
 
-interface PokemonData {
+export interface PokemonData {
     name: string;
     sprites: {
         front_default: string;
@@ -19,9 +21,15 @@ interface PokemonData {
         name: string;
         url: string;
     };
-}
+    types:{
+        type:{
+            name:string
+        }
+    }[];
+};
 
-interface PokemonSpeciesColor {
+
+export interface PokemonSpeciesColor {
     color: {
         name: string;
     };
@@ -46,8 +54,10 @@ export const fetchPokemonData = async (url: string): Promise<PokemonData & Pokem
 
         const speciesRequest = await fetch(response.species.url);
         const speciesResponse: PokemonSpeciesColor = await speciesRequest.json();
+        const typePokemons = response.types.map((typeData) => typeData.type);
+       
 
-        return { ...response, ...speciesResponse };
+        return { ...response, ...speciesResponse, ...typePokemons };
     } catch (err) {
         console.log('Error fetching Pokemon data:', err);
         throw err;
@@ -62,9 +72,9 @@ export const totalPokemons = 900;
 
 let currentPage = 0;
 const itemsPerPage = 20;
-export let filteredPokemonData: Pokemon[] = [];
+let filteredPokemonData: Pokemon[] = [];
 
-export async function renderPokemonPage() {
+export async function renderPokemonPage():Promise<void> {
     try {
         let response: PokeApiResponse;
 
@@ -76,11 +86,7 @@ export async function renderPokemonPage() {
                 count: filteredPokemonData.length,
             };
         }
-
-
         const totalPokemons = response.count;
-
-
 
         prevBtns.forEach((prevBtn) => {
             prevBtn.disabled = currentPage === 0;
@@ -107,13 +113,13 @@ export async function renderPokemonPage() {
             .map((pokeInfo) => {
                 const cardStyleClass = getCardStyle(pokeInfo.color.name);
                 return `
-            <article class="bg-white shadow-2xl rounded-md cursor-pointer hover:scale-105 transition-transform">
+            <article class="bg-white shadow-lg shadow-black rounded-md cursor-pointer hover:scale-105 transition-transform">
                 <header class="flex justify-center flex-col">
                     <div class="flex justify-center">
                         <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
                     </div>
                     <div class="flex justify-center bg-bot-card rounded-b-md ${cardStyleClass}">
-                        <p class="py-2 text-white custom-font">${pokeInfo.name}</p>
+                        <p class="py-2 text-white custom-font text-xl">${pokeInfo.name}</p>
                     </div>
                 </header>
             </article>
@@ -134,7 +140,7 @@ export async function renderPokemonPage() {
         console.error('Error:', error);
     }
 }
-export async function filterAndRenderPokemons(filteredPokemons: Pokemon[], totalPokemons: number) {
+export async function filterAndRenderPokemons(filteredPokemons:Pokemon[], totalPokemons: number) {
     filteredPokemonData = filteredPokemons;
     currentPage = 0;
     renderPokemonPage();
@@ -157,7 +163,7 @@ export function prevPage() {
         renderPokemonPage().then(() => {
             setTimeout(() => {
                 hideLoadingOverlay()
-            }, 250)
+            }, 400)
         })
     }
 }
@@ -170,7 +176,7 @@ export function nextPage() {
         renderPokemonPage().then(() => {
             setTimeout(() => {
                 hideLoadingOverlay()
-            }, 250)
+            }, 400)
         })
     }
 }
@@ -182,11 +188,11 @@ inicioBtn.addEventListener('click', () => {
     filteredPokemonData = []
     showLoadingOverlay();
     renderPokemonPage().then(() => {
-        pokeContainer.classList.replace('hidden','grid');
-        not_found_404.classList.replace('flex','hidden')
+        pokeContainer.classList.replace('hidden', 'grid');
+        not_found_404.classList.replace('flex', 'hidden')
         ContainerButtons.forEach(containerBtn => {
-            containerBtn.classList.replace('hidden','flex')
-          })
+            containerBtn.classList.replace('hidden', 'flex')
+        })
         setTimeout(() => {
             hideLoadingOverlay()
         }, 250)

@@ -4,7 +4,7 @@ const menuMobileContent = document.getElementById('menuMobilContent') as HTMLDiv
 export const menuMobile = ():void => {
     menuMobileIcon.addEventListener('click', () => {
         menuMobileContent.classList.toggle('invisible');
-        menuMobileContent.classList.toggle('h-28');
+        menuMobileContent.classList.toggle('h-32');
         menuMobileContent.classList.toggle('opacity-100')
       });
   };

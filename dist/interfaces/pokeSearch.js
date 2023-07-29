@@ -21,7 +21,6 @@ getAllPokemons().then((AllPokemons) => {
             if (totalPokemons > 0) {
                 showLoadingOverlay();
                 pokemonNotFound = false;
-                console.log(pokemonNotFound);
                 fetchFilteredPokemonData(foundPokemon, totalPokemons).then(() => {
                     setTimeout(() => {
                         hideLoadingOverlay();
@@ -30,7 +29,6 @@ getAllPokemons().then((AllPokemons) => {
             }
             else {
                 pokemonNotFound = true;
-                console.log(pokemonNotFound);
             }
             notFound404();
         };

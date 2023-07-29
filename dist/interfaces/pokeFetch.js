@@ -1,4 +1,5 @@
 import { getCardStyle } from './switchColor.js';
+;
 export const pokeApi = async () => {
     try {
         const request = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${totalPokemons}`);
@@ -17,7 +18,8 @@ export const fetchPokemonData = async (url) => {
         const response = await request.json();
         const speciesRequest = await fetch(response.species.url);
         const speciesResponse = await speciesRequest.json();
-        return { ...response, ...speciesResponse };
+        const typePokemons = response.types.map((typeData) => typeData.type);
+        return { ...response, ...speciesResponse, ...typePokemons };
     }
     catch (err) {
         console.log('Error fetching Pokemon data:', err);
@@ -32,7 +34,7 @@ const pokeContainer = document.getElementById('pokeContainer');
 export const totalPokemons = 900;
 let currentPage = 0;
 const itemsPerPage = 20;
-export let filteredPokemonData = [];
+let filteredPokemonData = [];
 export async function renderPokemonPage() {
     try {
         let response;
@@ -63,13 +65,13 @@ export async function renderPokemonPage() {
             .map((pokeInfo) => {
             const cardStyleClass = getCardStyle(pokeInfo.color.name);
             return `
-            <article class="bg-white shadow-2xl rounded-md cursor-pointer hover:scale-105 transition-transform">
+            <article class="bg-white shadow-lg shadow-black rounded-md cursor-pointer hover:scale-105 transition-transform">
                 <header class="flex justify-center flex-col">
                     <div class="flex justify-center">
                         <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
                     </div>
                     <div class="flex justify-center bg-bot-card rounded-b-md ${cardStyleClass}">
-                        <p class="py-2 text-white custom-font">${pokeInfo.name}</p>
+                        <p class="py-2 text-white custom-font text-xl">${pokeInfo.name}</p>
                     </div>
                 </header>
             </article>
@@ -107,7 +109,7 @@ export function prevPage() {
         renderPokemonPage().then(() => {
             setTimeout(() => {
                 hideLoadingOverlay();
-            }, 250);
+            }, 400);
         });
     }
 }
@@ -119,7 +121,7 @@ export function nextPage() {
         renderPokemonPage().then(() => {
             setTimeout(() => {
                 hideLoadingOverlay();
-            }, 250);
+            }, 400);
         });
     }
 }

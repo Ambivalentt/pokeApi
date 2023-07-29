@@ -25,7 +25,6 @@ getAllPokemons().then((AllPokemons) => {
       if (totalPokemons > 0) {
         showLoadingOverlay();
         pokemonNotFound = false
-        console.log(pokemonNotFound)
         fetchFilteredPokemonData(foundPokemon, totalPokemons).then(() => {
           setTimeout(() => {
             hideLoadingOverlay();
@@ -33,7 +32,6 @@ getAllPokemons().then((AllPokemons) => {
         });
       } else {
         pokemonNotFound = true
-        console.log(pokemonNotFound)
       }
       notFound404()
 
@@ -84,8 +82,7 @@ getAllPokemons().then((AllPokemons) => {
 
 async function fetchFilteredPokemonData(filteredPokemons: Pokemon[], totalPokemons: number) {
   try {
-    const pokemonData = await Promise.all(
-      filteredPokemons.map(async (pokemon) => {
+    const pokemonData = await Promise.all(filteredPokemons.map(async (pokemon) => {
         const data = await fetchPokemonData(pokemon.url);
         return { url: pokemon.url, name: data.name };
       })
@@ -96,6 +93,7 @@ async function fetchFilteredPokemonData(filteredPokemons: Pokemon[], totalPokemo
     console.error('Error fetching Pokemon data:', error);
   }
 }
+
 export const pokeContainer = document.getElementById('pokeContainer') as HTMLDivElement
 const not_found_404 = document.getElementById('notFound') as HTMLDivElement
 const ContainerButtons = document.querySelectorAll('#containerButtons') as NodeListOf<HTMLButtonElement>

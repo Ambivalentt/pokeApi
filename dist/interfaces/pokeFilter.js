@@ -1,6 +1,5 @@
 import { pokeApi, fetchPokemonData, filterAndRenderPokemons, hideLoadingOverlay, showLoadingOverlay } from './pokeFetch.js';
 import { switchTypes } from './SwitchType.js';
-import { menuMobile } from './menuMobile.js';
 const mySelectValues = document.querySelectorAll('#poke_filter');
 export const pokemonsFilter = async () => {
     const request = await pokeApi();
@@ -8,7 +7,6 @@ export const pokemonsFilter = async () => {
     const allpokemons = await Promise.all(response.map(pokemon => fetchPokemonData(pokemon.url)));
     mySelectValues.forEach(mySelectValue => {
         mySelectValue.addEventListener('change', () => {
-            menuMobile();
             showLoadingOverlay();
             let filterSelectValue = switchTypes(mySelectValue.value);
             const filteredResults = allpokemons.filter(pokemon => {

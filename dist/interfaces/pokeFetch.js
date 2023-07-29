@@ -1,4 +1,12 @@
 import { getCardStyle } from './switchColor.js';
+window.addEventListener('load', () => {
+    showLoadingOverlay();
+    renderPokemonPage().then(() => {
+        setTimeout(() => {
+            hideLoadingOverlay();
+        }, 0);
+    });
+});
 ;
 export const pokeApi = async () => {
     try {

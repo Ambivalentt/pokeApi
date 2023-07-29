@@ -1,5 +1,12 @@
 import { getCardStyle } from './switchColor.js'
-
+window.addEventListener('load',()=>{
+    showLoadingOverlay()
+    renderPokemonPage().then(()=>{
+         setTimeout(()=>{
+        hideLoadingOverlay()
+    },0)
+    })
+})
 
 
 interface PokeApiResponse {
@@ -69,6 +76,7 @@ export const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTML
 export const not_found_404 = document.getElementById('notFound') as HTMLDivElement
 const pokeContainer = document.getElementById('pokeContainer') as HTMLElement;
 export const totalPokemons = 900;
+
 
 let currentPage = 0;
 const itemsPerPage = 20;

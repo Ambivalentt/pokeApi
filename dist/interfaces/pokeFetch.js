@@ -52,7 +52,7 @@ let currentPage = 0;
 const itemsPerPage = 20;
 let filteredPokemonData = [];
 setInterval(() => {
-    if (totalPokemons < 500) {
+    if (totalPokemons < 900) {
         totalPokemons += 50;
     }
 }, 2000);

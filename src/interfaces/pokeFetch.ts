@@ -117,6 +117,7 @@ setInterval(() => {
     }
   }, 2000)
 
+
 export async function renderPokemonPage(): Promise<void> {
     try {
         let response: PokeApiResponse;

@@ -1,15 +1,4 @@
 import { getCardStyle } from './switchColor.js';
-window.addEventListener('load', () => {
-    showLoadingOverlay();
-    renderPokemonPage().then(() => {
-        setTimeout(() => {
-            ContainerButtons.forEach(buttons => {
-                buttons.classList.replace('hidden', 'flex');
-            });
-            hideLoadingOverlay();
-        }, 300);
-    });
-});
 ;
 export const pokeApi = async () => {
     try {

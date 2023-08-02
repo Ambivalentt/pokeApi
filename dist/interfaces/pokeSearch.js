@@ -40,8 +40,8 @@ getAllPokemons().then((AllPokemons) => {
                     inputSearchs[index].value = '';
                 }
                 else {
+                    menuMobile();
                     inputSearchs[index].setCustomValidity('');
-                    hiddenMobileContent();
                     performSearch(index);
                     inputSearchs[index].value = '';
                 }
@@ -57,7 +57,7 @@ getAllPokemons().then((AllPokemons) => {
                         inputSearchs[index].value = '';
                     }
                     else {
-                        hiddenMobileContent();
+                        menuMobile();
                         inputSearchs[index].setCustomValidity('');
                         performSearch(index);
                         inputSearchs[index].value = '';
@@ -103,8 +103,20 @@ function notFound404() {
     }
 }
 const menuMobileContent = document.getElementById('menuMobilContent');
-function hiddenMobileContent() {
-    menuMobileContent.classList.toggle('invisible');
-    menuMobileContent.classList.toggle('h-28');
-    menuMobileContent.classList.toggle('opacity-100');
+const menuMobileIcon = document.getElementById('menuIcon');
+let open = false;
+function menuMobile() {
+    open = !open;
+    if (open) {
+        menuMobileContent.classList.replace('invisible', 'visible');
+        menuMobileContent.classList.replace('h-0', 'h-32');
+        menuMobileContent.classList.replace('opacity-0', 'opacity-100');
+    }
+    else {
+        menuMobileContent.classList.replace('visible', 'invisible');
+        menuMobileContent.classList.replace('h-32', 'h-0');
+        menuMobileContent.classList.replace('opacity-100', 'opacity-0');
+    }
 }
+;
+menuMobileIcon.addEventListener('click', menuMobile);

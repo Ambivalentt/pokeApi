@@ -42,11 +42,10 @@ getAllPokemons().then((AllPokemons) => {
         const inputValue = inputSearchs[index].value.trim();
         if (inputValue === '') {
           inputSearchs[index].setCustomValidity('El campo no puede estar vacío o contener solo espacios.');
-
           inputSearchs[index].value = ''
         } else {
+          menuMobile()
           inputSearchs[index].setCustomValidity('');
-          hiddenMobileContent()
           performSearch(index);
           inputSearchs[index].value = ''
         }
@@ -65,7 +64,7 @@ getAllPokemons().then((AllPokemons) => {
             inputSearchs[index].setCustomValidity('El campo no puede estar vacío o contener solo espacios');
             inputSearchs[index].value = '';
           } else {
-            hiddenMobileContent()
+            menuMobile()
             inputSearchs[index].setCustomValidity('');
             performSearch(index);
             inputSearchs[index].value = ''
@@ -83,9 +82,9 @@ getAllPokemons().then((AllPokemons) => {
 async function fetchFilteredPokemonData(filteredPokemons: Pokemon[], totalPokemons: number) {
   try {
     const pokemonData = await Promise.all(filteredPokemons.map(async (pokemon) => {
-        const data = await fetchPokemonData(pokemon.url);
-        return { url: pokemon.url, name: data.name };
-      })
+      const data = await fetchPokemonData(pokemon.url);
+      return { url: pokemon.url, name: data.name };
+    })
     );
 
     filterAndRenderPokemons(pokemonData, totalPokemons);
@@ -114,9 +113,20 @@ function notFound404() {
   }
 }
 const menuMobileContent = document.getElementById('menuMobilContent') as HTMLDivElement
+const menuMobileIcon = document.getElementById('menuIcon') as HTMLButtonElement
+let open = false;
+function menuMobile() {
+  open = !open;
+  if (open) {
+    menuMobileContent.classList.replace('invisible', 'visible');
+    menuMobileContent.classList.replace('h-0', 'h-32');
+    menuMobileContent.classList.replace('opacity-0', 'opacity-100');
+  } else {
+    menuMobileContent.classList.replace('visible', 'invisible');
+    menuMobileContent.classList.replace('h-32', 'h-0');
+    menuMobileContent.classList.replace('opacity-100', 'opacity-0');
+  }
+};
 
-function hiddenMobileContent() {
-  menuMobileContent.classList.toggle('invisible');
-  menuMobileContent.classList.toggle('h-28');
-  menuMobileContent.classList.toggle('opacity-100')
-}
+menuMobileIcon.addEventListener('click',menuMobile)
+

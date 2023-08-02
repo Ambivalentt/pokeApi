@@ -83,7 +83,7 @@ export async function renderPokemonPage() {
             <article id="pokemonCard" data-pokemon-id="${pokeInfo.id}" class="bg-white shadow-lg shadow-black rounded-md cursor-pointer hover:scale-105 transition-transform">
                 <header class="flex justify-center flex-col">
                     <div class="flex justify-center">
-                        <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
+                        <img class="w-36 select-none" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
                     </div>
                     <div class="flex justify-center bg-bot-card rounded-b-md ${cardStyleClass}">
                         <p class="py-2 text-white custom-font text-xl">${pokeInfo.name}</p>
@@ -112,15 +112,16 @@ export async function renderPokemonPage() {
                     document.getElementById("pokemonName").textContent = selectedPokemon.name;
                     const pokemonInfo = `
                     <article>
-                    
                         <figure class="flex justify-center items-center">
-                            <img class=" w-60" src="${selectedPokemon.sprites.front_default}" alt="${selectedPokemon.name}" />
+                            <img class=" w-60  select-none" src="${selectedPokemon.sprites.front_default}" alt="${selectedPokemon.name}" />
                         </figure>
-                        <section class="px-4 pb-5">
-                         <h3 class="font-semibold text-xl">${habilidad}:</h3>
+                        <section class="px-4 pb-5 bg-red-600 rounded-b-lg shadow-xl text-white bg-opacity-90">
+                         <h3 class="font-semibold text-xl text-center">${habilidad}:</h3>
                               ${abilityDetails.map(ability => `
-                                   <h4 class="font-medium text-lg">${ability.name}</h4>
+                                   <section class="block md:flex justify-center items-center gap-x-1">
+                                   <h4 class="font-medium text-lg">${ability.name}:</h4>
                                    <p class=" font-light">${ability.detail}</p>
+                                   </section>
                                  `).join('\n')}
                         </section>
                     </article>
@@ -214,4 +215,9 @@ backHomeBtn.addEventListener('click', () => {
 const btnClose = document.getElementById('closeInfoBtn');
 btnClose.addEventListener('click', () => {
     pokeInfoContainer.classList.replace('flex', 'hidden');
+});
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        pokeInfoContainer.classList.replace('flex', 'hidden');
+    }
 });

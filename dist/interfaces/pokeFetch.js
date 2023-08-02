@@ -3,8 +3,11 @@ window.addEventListener('load', () => {
     showLoadingOverlay();
     renderPokemonPage().then(() => {
         setTimeout(() => {
+            ContainerButtons.forEach(buttons => {
+                buttons.classList.replace('hidden', 'flex');
+            });
             hideLoadingOverlay();
-        }, 0);
+        }, 300);
     });
 });
 ;
@@ -27,19 +30,24 @@ export const fetchPokemonData = async (url) => {
         const speciesRequest = await fetch(response.species.url);
         const speciesResponse = await speciesRequest.json();
         const typePokemons = response.types.map((typeData) => typeData.type);
-        return { ...response, ...speciesResponse, ...typePokemons };
+        const abilitiesRequests = response.abilities.map(abilityData => fetch(abilityData.ability.url));
+        const abilitiesResponses = await Promise.all(abilitiesRequests);
+        const abilitiesDetails = await Promise.all(abilitiesResponses.map((res) => res.json()));
+        return { ...response, ...speciesResponse, ...typePokemons, ...abilitiesDetails };
     }
     catch (err) {
         console.log('Error fetching Pokemon data:', err);
         throw err;
     }
 };
+const pokeInfoContainer = document.getElementById('pokeInfoScreen');
 const ContainerButtons = document.querySelectorAll('#containerButtons');
 export const prevBtns = document.querySelectorAll('#prevBtn');
 export const nextBtns = document.querySelectorAll('#nextBtn');
 export const not_found_404 = document.getElementById('notFound');
 const pokeContainer = document.getElementById('pokeContainer');
-export const totalPokemons = 900;
+const pokeDetailsContainer = document.getElementById('pokemonDetails');
+export const totalPokemons = 400;
 let currentPage = 0;
 const itemsPerPage = 20;
 let filteredPokemonData = [];
@@ -69,11 +77,10 @@ export async function renderPokemonPage() {
         const endIdx = startIdx + itemsPerPage;
         const pokemonsToRender = response.results.slice(startIdx, endIdx);
         const pokemonData = await Promise.all(pokemonsToRender.map((pokemon) => fetchPokemonData(pokemon.url)));
-        const pokeArticles = pokemonData
-            .map((pokeInfo) => {
+        const pokeArticles = pokemonData.map((pokeInfo) => {
             const cardStyleClass = getCardStyle(pokeInfo.color.name);
             return `
-            <article class="bg-white shadow-lg shadow-black rounded-md cursor-pointer hover:scale-105 transition-transform">
+            <article id="pokemonCard" data-pokemon-id="${pokeInfo.id}" class="bg-white shadow-lg shadow-black rounded-md cursor-pointer hover:scale-105 transition-transform">
                 <header class="flex justify-center flex-col">
                     <div class="flex justify-center">
                         <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
@@ -87,6 +94,45 @@ export async function renderPokemonPage() {
         })
             .join('');
         pokeContainer.innerHTML = pokeArticles;
+        const pokemonCards = document.querySelectorAll('#pokemonCard');
+        pokemonCards.forEach(pokemonCard => {
+            const pokemonId = pokemonCard.getAttribute('data-pokemon-id');
+            pokemonCard.addEventListener('click', async () => {
+                const selectedPokemon = pokemonData.find((pokemon) => pokemon.id.toString() === pokemonId);
+                if (selectedPokemon) {
+                    const abilitiesUrls = selectedPokemon.abilities.map(ability => ability.ability.url);
+                    const pokeAbilitiesFetch = await Promise.all(abilitiesUrls.map(url => fetch(url)));
+                    const pokeAbilitiesData = await Promise.all(pokeAbilitiesFetch.map(response => response.json()));
+                    const abilityDetails = pokeAbilitiesData.map((ability) => {
+                        const nameEsp = ability.names.find((nameAbi) => nameAbi.language.name === "es");
+                        const abilityDetails = ability.flavor_text_entries.find((skillDetails) => skillDetails.language.name === "es");
+                        return { name: nameEsp.name, detail: abilityDetails.flavor_text };
+                    });
+                    const habilidad = abilityDetails.length > 1 ? 'Habilidades' : 'Habilidad';
+                    document.getElementById("pokemonName").textContent = selectedPokemon.name;
+                    const pokemonInfo = `
+                    <article>
+                    
+                        <figure class="flex justify-center items-center">
+                            <img class=" w-60" src="${selectedPokemon.sprites.front_default}" alt="${selectedPokemon.name}" />
+                        </figure>
+                        <section class="px-4 pb-5">
+                         <h3 class="font-semibold text-xl">${habilidad}:</h3>
+                              ${abilityDetails.map(ability => `
+                                   <h4 class="font-medium text-lg">${ability.name}</h4>
+                                   <p class=" font-light">${ability.detail}</p>
+                                 `).join('\n')}
+                        </section>
+                    </article>
+                    `;
+                    pokeDetailsContainer.innerHTML = pokemonInfo;
+                    pokeInfoContainer.classList.replace('hidden', 'flex');
+                }
+                else {
+                    console.log('Err pokemon no encontrado para brindar informacion');
+                }
+            });
+        });
         const currentPageSpan = document.querySelectorAll('#currentPage');
         if (currentPageSpan) {
             currentPageSpan.forEach((pages) => {
@@ -134,6 +180,7 @@ export function nextPage() {
     }
 }
 export const inicioBtn = document.getElementById('indexBtn');
+const backHomeBtn = document.getElementById('homeBtn');
 inicioBtn.addEventListener('click', () => {
     currentPage = 0;
     filteredPokemonData = [];
@@ -148,4 +195,23 @@ inicioBtn.addEventListener('click', () => {
             hideLoadingOverlay();
         }, 250);
     });
+});
+backHomeBtn.addEventListener('click', () => {
+    currentPage = 0;
+    filteredPokemonData = [];
+    showLoadingOverlay();
+    renderPokemonPage().then(() => {
+        pokeContainer.classList.replace('hidden', 'grid');
+        not_found_404.classList.replace('flex', 'hidden');
+        ContainerButtons.forEach(containerBtn => {
+            containerBtn.classList.replace('hidden', 'flex');
+        });
+        setTimeout(() => {
+            hideLoadingOverlay();
+        }, 250);
+    });
+});
+const btnClose = document.getElementById('closeInfoBtn');
+btnClose.addEventListener('click', () => {
+    pokeInfoContainer.classList.replace('flex', 'hidden');
 });

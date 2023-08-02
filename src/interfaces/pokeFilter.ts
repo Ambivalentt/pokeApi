@@ -1,7 +1,5 @@
 import { pokeApi, fetchPokemonData, PokemonSpeciesColor, filterAndRenderPokemons, hideLoadingOverlay, showLoadingOverlay, PokemonData } from './pokeFetch.js';
-import { getAllPokemons } from './pokeSearch.js';
 import { switchTypes } from './SwitchType.js';
-import {menuMobile} from './menuMobile.js'
 const mySelectValues = document.querySelectorAll('#poke_filter') as NodeListOf<HTMLSelectElement>;
 
 

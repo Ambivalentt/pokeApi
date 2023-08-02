@@ -1,10 +1,14 @@
 import { getCardStyle } from './switchColor.js'
-window.addEventListener('load',()=>{
+
+window.addEventListener('load', () => {
     showLoadingOverlay()
-    renderPokemonPage().then(()=>{
-         setTimeout(()=>{
-        hideLoadingOverlay()
-    },0)
+    renderPokemonPage().then(() => {
+        setTimeout(() => {
+            ContainerButtons.forEach(buttons => {
+                buttons.classList.replace('hidden', 'flex')
+            })
+            hideLoadingOverlay()
+        }, 300)
     })
 })
 
@@ -20,7 +24,13 @@ export interface Pokemon {
 }
 
 export interface PokemonData {
+    abilities: {
+        ability: {
+            url: string
+        }
+    }[];
     name: string;
+    id: number;
     sprites: {
         front_default: string;
     };
@@ -28,18 +38,30 @@ export interface PokemonData {
         name: string;
         url: string;
     };
-    types:{
-        type:{
-            name:string
+    types: {
+        type: {
+            name: string
         }
     }[];
 };
 
 
+interface NameObject {
+    language: {
+        name: string;
+        url: string;
+    };
+    name: string;
+}
+
 export interface PokemonSpeciesColor {
     color: {
         name: string;
     };
+}
+interface AbilityInfo {
+    name: string;
+    detail: string;
 }
 
 export const pokeApi = async (): Promise<PokeApiResponse> => {
@@ -62,27 +84,35 @@ export const fetchPokemonData = async (url: string): Promise<PokemonData & Pokem
         const speciesRequest = await fetch(response.species.url);
         const speciesResponse: PokemonSpeciesColor = await speciesRequest.json();
         const typePokemons = response.types.map((typeData) => typeData.type);
-       
 
-        return { ...response, ...speciesResponse, ...typePokemons };
+        const abilitiesRequests = response.abilities.map(abilityData => fetch(abilityData.ability.url));
+        const abilitiesResponses = await Promise.all(abilitiesRequests);
+        const abilitiesDetails = await Promise.all(abilitiesResponses.map((res) => res.json()));
+
+        return { ...response, ...speciesResponse, ...typePokemons, ...abilitiesDetails };
+
     } catch (err) {
         console.log('Error fetching Pokemon data:', err);
         throw err;
     }
 };
-const ContainerButtons = document.querySelectorAll('#containerButtons') as NodeListOf<HTMLButtonElement>
+
+const pokeInfoContainer = document.getElementById('pokeInfoScreen') as HTMLDivElement;
+const ContainerButtons = document.querySelectorAll('#containerButtons') as NodeListOf<HTMLButtonElement>;
 export const prevBtns = document.querySelectorAll('#prevBtn') as NodeListOf<HTMLButtonElement>;
 export const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTMLButtonElement>;
-export const not_found_404 = document.getElementById('notFound') as HTMLDivElement
-const pokeContainer = document.getElementById('pokeContainer') as HTMLElement;
-export const totalPokemons = 900;
+export const not_found_404 = document.getElementById('notFound') as HTMLDivElement;
+const pokeContainer = document.getElementById('pokeContainer') as HTMLDivElement;
+const pokeDetailsContainer = document.getElementById('pokemonDetails') as HTMLDivElement;
+export const totalPokemons = 400;
 
 
 let currentPage = 0;
 const itemsPerPage = 20;
 let filteredPokemonData: Pokemon[] = [];
 
-export async function renderPokemonPage():Promise<void> {
+
+export async function renderPokemonPage(): Promise<void> {
     try {
         let response: PokeApiResponse;
 
@@ -95,6 +125,7 @@ export async function renderPokemonPage():Promise<void> {
             };
         }
         const totalPokemons = response.count;
+
 
         prevBtns.forEach((prevBtn) => {
             prevBtn.disabled = currentPage === 0;
@@ -117,11 +148,12 @@ export async function renderPokemonPage():Promise<void> {
             pokemonsToRender.map((pokemon) => fetchPokemonData(pokemon.url)) // Ensure the 'url' is used correctly
         );
 
-        const pokeArticles = pokemonData
-            .map((pokeInfo) => {
-                const cardStyleClass = getCardStyle(pokeInfo.color.name);
-                return `
-            <article class="bg-white shadow-lg shadow-black rounded-md cursor-pointer hover:scale-105 transition-transform">
+
+
+        const pokeArticles = pokemonData.map((pokeInfo) => {
+            const cardStyleClass = getCardStyle(pokeInfo.color.name);
+            return `
+            <article id="pokemonCard" data-pokemon-id="${pokeInfo.id}" class="bg-white shadow-lg shadow-black rounded-md cursor-pointer hover:scale-105 transition-transform">
                 <header class="flex justify-center flex-col">
                     <div class="flex justify-center">
                         <img class="w-36" src="${pokeInfo.sprites.front_default}" alt="${pokeInfo.name}" />
@@ -132,11 +164,56 @@ export async function renderPokemonPage():Promise<void> {
                 </header>
             </article>
           `;
-            })
+        })
             .join('');
         pokeContainer.innerHTML = pokeArticles;
 
+        const pokemonCards = document.querySelectorAll('#pokemonCard');
 
+        pokemonCards.forEach(pokemonCard => {
+            const pokemonId = pokemonCard.getAttribute('data-pokemon-id');
+            //eventlistener de cada card
+            pokemonCard.addEventListener('click', async () => {
+                const selectedPokemon = pokemonData.find((pokemon) => pokemon.id.toString() === pokemonId);
+
+                if (selectedPokemon) {
+                    const abilitiesUrls = selectedPokemon.abilities.map(ability => ability.ability.url);
+
+                    const pokeAbilitiesFetch = await Promise.all(abilitiesUrls.map(url => fetch(url)));
+                    const pokeAbilitiesData = await Promise.all(pokeAbilitiesFetch.map(response => response.json()));
+                    const abilityDetails: AbilityInfo[] = pokeAbilitiesData.map((ability) => {
+                        const nameEsp = ability.names.find((nameAbi: NameObject) => nameAbi.language.name === "es")
+                        const abilityDetails = ability.flavor_text_entries.find((skillDetails: NameObject) => skillDetails.language.name === "es")
+                        return { name: nameEsp.name, detail: abilityDetails.flavor_text }
+                    })
+                    const habilidad = abilityDetails.length > 1 ? 'Habilidades' : 'Habilidad';
+                    
+                    (document.getElementById("pokemonName")as HTMLSpanElement).textContent = selectedPokemon.name;
+                    const pokemonInfo =
+                        `
+                    <article>
+                    
+                        <figure class="flex justify-center items-center">
+                            <img class=" w-60" src="${selectedPokemon.sprites.front_default}" alt="${selectedPokemon.name}" />
+                        </figure>
+                        <section class="px-4 pb-5">
+                         <h3 class="font-semibold text-xl">${habilidad}:</h3>
+                              ${abilityDetails.map(ability =>`
+                                   <h4 class="font-medium text-lg">${ability.name}</h4>
+                                   <p class=" font-light">${ability.detail}</p>
+                                 `).join('\n')}
+                        </section>
+                    </article>
+                    `
+                    pokeDetailsContainer.innerHTML = pokemonInfo
+                    pokeInfoContainer.classList.replace('hidden', 'flex')
+                } else {
+                    console.log('Err pokemon no encontrado para brindar informacion')
+                }
+
+            })
+
+        })
 
         const currentPageSpan = document.querySelectorAll('#currentPage');
         if (currentPageSpan) {
@@ -148,7 +225,11 @@ export async function renderPokemonPage():Promise<void> {
         console.error('Error:', error);
     }
 }
-export async function filterAndRenderPokemons(filteredPokemons:Pokemon[], totalPokemons: number) {
+
+
+
+
+export async function filterAndRenderPokemons(filteredPokemons: Pokemon[], totalPokemons: number) {
     filteredPokemonData = filteredPokemons;
     currentPage = 0;
     renderPokemonPage();
@@ -190,7 +271,7 @@ export function nextPage() {
 }
 
 export const inicioBtn = document.getElementById('indexBtn') as HTMLButtonElement
-
+const backHomeBtn = document.getElementById('homeBtn') as HTMLButtonElement;
 inicioBtn.addEventListener('click', () => {
     currentPage = 0
     filteredPokemonData = []
@@ -205,4 +286,26 @@ inicioBtn.addEventListener('click', () => {
             hideLoadingOverlay()
         }, 250)
     })
+})
+
+backHomeBtn.addEventListener('click', () => {
+    currentPage = 0
+    filteredPokemonData = []
+    showLoadingOverlay();
+    renderPokemonPage().then(() => {
+        pokeContainer.classList.replace('hidden', 'grid');
+        not_found_404.classList.replace('flex', 'hidden')
+        ContainerButtons.forEach(containerBtn => {
+            containerBtn.classList.replace('hidden', 'flex')
+        })
+        setTimeout(() => {
+            hideLoadingOverlay()
+        }, 250)
+    })
+})
+
+const btnClose = document.getElementById('closeInfoBtn') as HTMLButtonElement;
+
+btnClose.addEventListener('click', () => {
+    pokeInfoContainer.classList.replace('flex', 'hidden')
 })

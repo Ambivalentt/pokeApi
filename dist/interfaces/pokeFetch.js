@@ -11,6 +11,7 @@ window.addEventListener('load', () => {
     });
 });
 ;
+let totalPokemons = 300;
 export const pokeApi = async () => {
     try {
         const request = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${totalPokemons}`);
@@ -47,15 +48,9 @@ export const nextBtns = document.querySelectorAll('#nextBtn');
 export const not_found_404 = document.getElementById('notFound');
 const pokeContainer = document.getElementById('pokeContainer');
 const pokeDetailsContainer = document.getElementById('pokemonDetails');
-export let totalPokemons = 20;
 let currentPage = 0;
 const itemsPerPage = 20;
 let filteredPokemonData = [];
-setInterval(() => {
-    if (totalPokemons < 900) {
-        totalPokemons += 50;
-    }
-}, 2000);
 export async function renderPokemonPage() {
     try {
         let response;
@@ -120,7 +115,7 @@ export async function renderPokemonPage() {
                         <figure class="flex justify-center items-center">
                             <img class=" w-60  select-none" src="${selectedPokemon.sprites.front_default}" alt="${selectedPokemon.name}" />
                         </figure>
-                        <section class="px-4 pb-5 bg-red-600 rounded-b-lg shadow-xl text-white bg-opacity-90">
+                        <section class="px-4 pb-5 bg-gray-200 rounded-b-lg shadow-xl text-black bg-opacity-90">
                          <h3 class="font-semibold text-xl text-center">${habilidad}:</h3>
                               ${abilityDetails.map(ability => `
                                    <section class="block md:flex justify-center items-center gap-x-1">

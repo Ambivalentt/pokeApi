@@ -1,5 +1,6 @@
 import { pokeApi, fetchPokemonData, Pokemon, filterAndRenderPokemons, hideLoadingOverlay, showLoadingOverlay } from "./pokeFetch.js";
 
+
 export async function getAllPokemons() {
   try {
     const response = await pokeApi();
@@ -10,10 +11,12 @@ export async function getAllPokemons() {
   }
 }
 
+
 let pokemonNotFound = false
 
 getAllPokemons().then((AllPokemons) => {
   if (AllPokemons) {
+    console.log(AllPokemons.length + "hola desde pokesearxch")
     const pokeSearchBtn = document.querySelectorAll('#btnSearch') as NodeListOf<HTMLButtonElement>;
     const inputSearchs = document.querySelectorAll('#inputSearch') as NodeListOf<HTMLInputElement>;
 
@@ -128,5 +131,5 @@ function menuMobile() {
   }
 };
 
-menuMobileIcon.addEventListener('click',menuMobile)
+menuMobileIcon.addEventListener('click', menuMobile)
 

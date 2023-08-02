@@ -12,6 +12,7 @@ export async function getAllPokemons() {
 let pokemonNotFound = false;
 getAllPokemons().then((AllPokemons) => {
     if (AllPokemons) {
+        console.log(AllPokemons.length + "hola desde pokesearxch");
         const pokeSearchBtn = document.querySelectorAll('#btnSearch');
         const inputSearchs = document.querySelectorAll('#inputSearch');
         const performSearch = async (index) => {

@@ -37,6 +37,6 @@ export const switchTypes = (type) => {
         case 'Normal':
             return 'normal';
         default:
-            return "";
+            return console.log('No se encontro al pokemon');
     }
 };

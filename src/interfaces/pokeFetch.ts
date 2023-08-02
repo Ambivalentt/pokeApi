@@ -63,6 +63,7 @@ interface AbilityInfo {
     name: string;
     detail: string;
 }
+let totalPokemons = 300;
 
 export const pokeApi = async (): Promise<PokeApiResponse> => {
     try {
@@ -104,18 +105,10 @@ export const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTML
 export const not_found_404 = document.getElementById('notFound') as HTMLDivElement;
 const pokeContainer = document.getElementById('pokeContainer') as HTMLDivElement;
 const pokeDetailsContainer = document.getElementById('pokemonDetails') as HTMLDivElement;
-export let totalPokemons = 20;
-
 
 let currentPage = 0;
 const itemsPerPage = 20;
 let filteredPokemonData: Pokemon[] = [];
-
-setInterval(() => {
-    if(totalPokemons < 900){
-        totalPokemons += 50;
-    }
-  }, 2000)
 
 
 export async function renderPokemonPage(): Promise<void> {
@@ -180,7 +173,7 @@ export async function renderPokemonPage(): Promise<void> {
             const pokemonId = pokemonCard.getAttribute('data-pokemon-id');
             //eventlistener de cada card
             pokemonCard.addEventListener('click', async () => {
-               
+
                 const selectedPokemon = pokemonData.find((pokemon) => pokemon.id.toString() === pokemonId);
 
                 if (selectedPokemon) {
@@ -194,17 +187,17 @@ export async function renderPokemonPage(): Promise<void> {
                         return { name: nameEsp.name, detail: abilityDetails.flavor_text }
                     })
                     const habilidad = abilityDetails.length > 1 ? 'Habilidades' : 'Habilidad';
-                    
-                    (document.getElementById("pokemonName")as HTMLSpanElement).textContent = selectedPokemon.name;
+
+                    (document.getElementById("pokemonName") as HTMLSpanElement).textContent = selectedPokemon.name;
                     const pokemonInfo =
                         `
                     <article>
                         <figure class="flex justify-center items-center">
                             <img class=" w-60  select-none" src="${selectedPokemon.sprites.front_default}" alt="${selectedPokemon.name}" />
                         </figure>
-                        <section class="px-4 pb-5 bg-red-600 rounded-b-lg shadow-xl text-white bg-opacity-90">
+                        <section class="px-4 pb-5 bg-gray-200 rounded-b-lg shadow-xl text-black bg-opacity-90">
                          <h3 class="font-semibold text-xl text-center">${habilidad}:</h3>
-                              ${abilityDetails.map(ability =>`
+                              ${abilityDetails.map(ability => `
                                    <section class="block md:flex justify-center items-center gap-x-1">
                                    <h4 class="font-medium text-lg">${ability.name}:</h4>
                                    <p class=" font-light">${ability.detail}</p>
@@ -216,7 +209,7 @@ export async function renderPokemonPage(): Promise<void> {
                     pokeDetailsContainer.innerHTML = pokemonInfo
                     pokeInfoContainer.classList.replace('hidden', 'flex')
 
-                    
+
                 } else {
                     console.log('Err pokemon no encontrado para brindar informacion')
                 }
@@ -323,8 +316,8 @@ btnClose.addEventListener('click', () => {
 })
 
 
-document.addEventListener('keydown', (event) =>{
-    if(event.key === 'Escape'){
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
         pokeInfoContainer.classList.replace('flex', 'hidden')
     }
 })

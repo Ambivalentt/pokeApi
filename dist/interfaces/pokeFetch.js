@@ -1,4 +1,15 @@
 import { getCardStyle } from './switchColor.js';
+window.addEventListener('load', () => {
+    showLoadingOverlay();
+    renderPokemonPage().then(() => {
+        setTimeout(() => {
+            ContainerButtons.forEach(buttons => {
+                buttons.classList.replace('hidden', 'flex');
+            });
+            hideLoadingOverlay();
+        }, 300);
+    });
+});
 ;
 export const pokeApi = async () => {
     try {
@@ -36,10 +47,15 @@ export const nextBtns = document.querySelectorAll('#nextBtn');
 export const not_found_404 = document.getElementById('notFound');
 const pokeContainer = document.getElementById('pokeContainer');
 const pokeDetailsContainer = document.getElementById('pokemonDetails');
-export const totalPokemons = 400;
+export let totalPokemons = 20;
 let currentPage = 0;
 const itemsPerPage = 20;
 let filteredPokemonData = [];
+setInterval(() => {
+    if (totalPokemons < 500) {
+        totalPokemons += 50;
+    }
+}, 2000);
 export async function renderPokemonPage() {
     try {
         let response;

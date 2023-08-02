@@ -1,5 +1,17 @@
 import { getCardStyle } from './switchColor.js'
 
+window.addEventListener('load', () => {
+    showLoadingOverlay()
+    renderPokemonPage().then(() => {
+        setTimeout(() => {
+            ContainerButtons.forEach(buttons => {
+                buttons.classList.replace('hidden', 'flex')
+            })
+            hideLoadingOverlay()
+        }, 300)
+    })
+})
+
 
 interface PokeApiResponse {
     results: Pokemon[];
@@ -92,13 +104,18 @@ export const nextBtns = document.querySelectorAll('#nextBtn') as NodeListOf<HTML
 export const not_found_404 = document.getElementById('notFound') as HTMLDivElement;
 const pokeContainer = document.getElementById('pokeContainer') as HTMLDivElement;
 const pokeDetailsContainer = document.getElementById('pokemonDetails') as HTMLDivElement;
-export const totalPokemons = 400;
+export let totalPokemons = 20;
 
 
 let currentPage = 0;
 const itemsPerPage = 20;
 let filteredPokemonData: Pokemon[] = [];
 
+setInterval(() => {
+    if(totalPokemons < 900){
+        totalPokemons += 50;
+    }
+  }, 2000)
 
 export async function renderPokemonPage(): Promise<void> {
     try {
